@@ -27,6 +27,7 @@ head(nonuse)
 summary(nonuse)
 ```
 
+
 This file contains measures of upper extremity nonuse:
 
 - PANU: Proximal Arm Non Use
@@ -52,6 +53,7 @@ We use a Spearman correlation, because we do not have assumptions about data dis
 cor.test(nonuse$PANU, nonuse$SANU, method = "spearman")
 ```
 
+
 - Visualize the PANU-SANU relationship (and the PANU-EENU relationship)
 
 ```{r plot-correlations}
@@ -68,6 +70,22 @@ show(p1)
 
 
 - Perform a linear regression for PANU-SANU (and for PANU-EENU)
+
+We do not predict a linear regression, but let us see it nonetheless.
+
+```{r linear-regression}
+library(ggplot2)
+p1 <- ggplot(nonuse, aes(x = PANU, y = SANU)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  # xlim(-100, 100) +
+  # ylim(-100, 100) +
+  labs(title = "PANU vs SANU", subtitle = "Whole possible range of data", x = "PANU (%)", y = "SANU (%)") +
+  theme_minimal()
+
+show(p1)
+```
+
 
 - Give the regression equations: PANU = a * SANU + b and PANU = a * EENU + b
 
