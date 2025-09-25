@@ -73,14 +73,26 @@ show(p1)
 
 We do not predict a linear regression, but let us see it nonetheless.
 
-```{r linear-regression}
+```{r panu-sanu_linear-regression}
 library(ggplot2)
 p1 <- ggplot(nonuse, aes(x = PANU, y = SANU)) +
   geom_point() +
   geom_smooth(method = "lm", se = FALSE, color = "blue") +
   # xlim(-100, 100) +
   # ylim(-100, 100) +
-  labs(title = "PANU vs SANU", subtitle = "Whole possible range of data", x = "PANU (%)", y = "SANU (%)") +
+  labs(title = "PANU vs SANU", x = "PANU (%)", y = "SANU (%)") +
+  theme_minimal()
+
+show(p1)
+```
+```{r panu-eenu_linear-regression}
+library(ggplot2)
+p1 <- ggplot(nonuse, aes(x = PANU, y = EENU)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  # xlim(-100, 100) +
+  # ylim(-100, 100) +
+  labs(title = "PANU vs EENU", x = "PANU (%)", y = "EENU (%)") +
   theme_minimal()
 
 show(p1)
@@ -88,6 +100,21 @@ show(p1)
 
 
 - Give the regression equations: PANU = a * SANU + b and PANU = a * EENU + b
+
+```{r regression-equations}
+model_sanu <- lm(PANU ~ SANU, data = nonuse)
+summary(model_sanu)
+coefficients_sanu <- coefficients(model_sanu)
+a_sanu <- coefficients_sanu["SANU"]
+b_sanu <- coefficients_sanu["(Intercept)"]
+cat("Regression equation for PANU as a function of SANU: PANU =", a_sanu, "* SANU +", b_sanu, "\n")
+model_eenu <- lm(PANU ~ EENU, data = nonuse)
+summary(model_eenu)
+coefficients_eenu <- coefficients(model_eenu)
+a_eenu <- coefficients_eenu["EENU"]
+b_eenu <- coefficients_eenu["(Intercept)"]
+cat("Regression equation for PANU as a function of EENU: PANU =", a_eenu, "* EENU +", b_eenu, "\n")
+```
 
 - Summarize your results as you would do in your master’s thesis report, or as in a scientific article (e.g., What sentence will you write in the article explaining your result?).
 
