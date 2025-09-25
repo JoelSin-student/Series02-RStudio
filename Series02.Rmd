@@ -66,7 +66,15 @@ p1 <- ggplot(nonuse, aes(x = PANU, y = SANU)) +
   labs(title = "PANU vs SANU", subtitle = "Whole possible range of data", x = "PANU (%)", y = "SANU (%)") +
   theme_minimal()
 
+p2 <- ggplot(nonuse, aes(x = PANU, y = EENU)) +
+  geom_point() +
+  xlim(-100, 100) +
+  ylim(-100, 100) +
+  labs(title = "PANU vs EENU", subtitle = "Whole possible range of data", x = "PANU (%)", y = "EENU (%)") +
+  theme_minimal()
+
 show(p1)
+show(p2)
 ```
 
 
@@ -122,3 +130,5 @@ cat("Regression equation for PANU as a function of EENU: PANU =", a_eenu, "* EEN
 PANU is significantly correlated with SANU and EENU according to the Spearman test (p < 0.01), meaning that higher values of SANU and EENU are associated with higher values of PANU. However, when we tested the linear correlation, we found no significant relationship between PANU and SANU (p = 0.17), but a significant (p < 0.001), although poor (adjusted r² = 0.22), linear correlation between PANU and EENU. This suggests that while there is a monotonic relationship between these variables, the EENU seems more reliable to describe PANU.
 
 - What are the limits of your analysis?
+
+This analysis does not propose a combined model of SANU and EENU to describe PANU, which could be more informative. Additionally, the data may contain non-linear relationships that are not captured by the linear regression model, although the data distribution does not suggest it. Furthermore, we did not test for normality or even check visually the variables distribution, which could have given insights about the statistical power of the sample, or the statistical tests to use.
