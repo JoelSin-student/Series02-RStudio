@@ -51,6 +51,7 @@ Below are some questions to guide your analysis.
 We use a Spearman correlation, because we do not have assumptions about data distribution, and we do not assume a linear relationship between the variables.
 ```{r correlation-tests}
 cor.test(nonuse$PANU, nonuse$SANU, method = "spearman")
+cor.test(nonuse$PANU, nonuse$EENU, method = "spearman")
 ```
 
 
@@ -117,5 +118,7 @@ cat("Regression equation for PANU as a function of EENU: PANU =", a_eenu, "* EEN
 ```
 
 - Summarize your results as you would do in your master’s thesis report, or as in a scientific article (e.g., What sentence will you write in the article explaining your result?).
+
+PANU is significantly correlated with SANU and EENU according to the Spearman test (p < 0.01), meaning that higher values of SANU and EENU are associated with higher values of PANU. However, when we tested the linear correlation, we found no significant relationship between PANU and SANU (p = 0.17), but a significant (p < 0.001), although poor (adjusted r² = 0.22), linear correlation between PANU and EENU. This suggests that while there is a monotonic relationship between these variables, the EENU seems more reliable to describe PANU.
 
 - What are the limits of your analysis?
