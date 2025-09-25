@@ -21,13 +21,11 @@ As you will see, the data is far from perfect, but this is the reality of experi
 
 Download the file NonUse.csv from the course Moodle.
 
-```{r}
+```{r load-data, message=FALSE, warning=FALSE}
 nonuse <- read.csv("data/test_data/NonUse.csv", sep = ",", header=TRUE)
 head(nonuse)
 summary(nonuse)
 ```
-
-
 
 This file contains measures of upper extremity nonuse:
 
@@ -48,6 +46,12 @@ In your notebook, make a clear description of the experiment, the variables and 
 Below are some questions to guide your analysis.
 
 - Is PANU correlated with SANU and/or EENU?
+
+We use a Spearman correlation, because we do not have assumptions about data distribution, and we do not assume a linear relationship between the variables.
+```{r correlation-tests}
+cor.test(nonuse$PANU, nonuse$SANU, method = "spearman")
+```
+
 
 - Visualize the PANU-SANU relationship (and the PANU-EENU relationship)
 
