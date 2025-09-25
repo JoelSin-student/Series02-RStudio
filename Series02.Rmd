@@ -52,8 +52,20 @@ We use a Spearman correlation, because we do not have assumptions about data dis
 cor.test(nonuse$PANU, nonuse$SANU, method = "spearman")
 ```
 
-
 - Visualize the PANU-SANU relationship (and the PANU-EENU relationship)
+
+```{r plot-correlations}
+library(ggplot2)
+p1 <- ggplot(nonuse, aes(x = PANU, y = SANU)) +
+  geom_point() +
+  xlim(-100, 100) +
+  ylim(-100, 100) +
+  labs(title = "PANU vs SANU", subtitle = "Whole possible range of data", x = "PANU (%)", y = "SANU (%)") +
+  theme_minimal()
+
+show(p1)
+```
+
 
 - Perform a linear regression for PANU-SANU (and for PANU-EENU)
 
