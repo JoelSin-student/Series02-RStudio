@@ -208,36 +208,54 @@ Download the file PrePost.csv
 This file contains before/after measurements. The treatment is a rehabilitation training for individuals with cardiac conditions.
 
 Before going further, you have to make clear what are the measured variables. 
+
+```{r load-prepost-data, message=FALSE, warning=FALSE}
+data <- read.csv("data/test_data/PrePost.csv", sep = ",", header=TRUE)
+summary(data)
+```
+
+
 - What do they measure? 
 
+We can see a "perf" variable, from which no assumptions can be made as no information is given about it in the file or in the question.
 
 - What are the units? 
 
+We do not know because we do not know what the variable measures.
 
 - What are the possible values? 
 
+We do not know because we do not know what the variable measures.
 
 - What are the expected changes over rehabilitation.
 
+We do not know because we do not know what the variable measures. However, we could make the hypothesis of an increase in the variable measured, because a "perf increase" would be synonym of improvement for subjects.
 
-Make a table, with one row per variable, and the following columns:
+- Make a table, with one row per variable, and the following columns:
 
 | Variable | Description | Unit | Possible values | Expected change |
 
 | Variable | Description | Unit | Possible values | Expected change |
 |----------|-------------|------|-----------------|-----------------|
-| VO2peak  | Peak oxygen uptake during exercise | ml/kg/min | 0-100+ | Increase |
+|   perf   |      ?      |   ?  |        ?        |     Increase    |
 
 ### The analysis
 You want to know if the treatment has an effect on one or more of the measured variables.
 
 - Does the treatment have an effect?
 
+We will decide it over the results of our statistical analysis.
 
 - What comparison are you going to make?
 
+We will compare the "perf" variable before and after treatment.
 
 - Which test will you use? Parametric or non-parametric?
+
+We can observe that the sample size is small (n=8), which makes difficult to assess the normality of the distribution. Thus, we will use a non-parametric test. For the precise test to be used, we can see that the samples are paired (before and after treatment for the same subjects), so we will use the Wilcoxon signed-rank test that is designed for paired samples.
+
+
+
 
 
 - Which graph illustrates the effect of the treatment?
