@@ -146,41 +146,55 @@ In this series of exercises, you will explore how to compare two groups of data,
 Below are some questions to guide your analysis. You can answer them in your notebook, with a short sentence for each question.
 
 - What is a median? A mean?
+
 The median is the value separating both halves of a dataset when it is ordered from lowest to highest, whereas the arithmetic mean is the sum of observations divided by the number of observations. Both metrics relates to the central tendency of the dataset. (1)
 
 - What is a variance? A standard deviation?
+
 Variance expresses the dispersion of data around the mean of a dataset, calculated as the average of the squared differences from the mean. The standard deviation is the square root of the variance, providing a measure of dispersion in the same units as the data. (1)
 
 - What is a normal distribution?
+
 A normal distribution, also known as Gaussian distribution, is a continuous probability distribution characterized by data symmetrically distributed around the mean, with most values clustering around the mean and fewer values appearing as you move away from it. It is defined by its mean and standard deviation. (1)
 
 - What is a statistical test?
+
 Statistical tests are procedures by which we can consensually draw conclusions about a population based on observations from samples. Each test has its null hypothesis (H0) to be challenged against an alternative hypothesis. (1)
 
 - When to use a statistical test?
+
 It is used when we want to explore a research question about metrics in a single or multiple populations for which we already have hypotheses. (1)
 
 - What is a parametric test? A non-parametric test?
+
 Parametric tests are statistical tests for which the data must meet a distributional assumption, whereas non-parametric tests can be applied without making this type of assumptions. (1)
 
 - What are the assumptions of parametric tests?
+
 Parametric tests assume that the data are at least ordinal and follows a specific distribution (usually normal), and, depending on test, that the samples are random and independently chosen from the population or that the variances of the groups being compared are equal (homoscedasticity). (2)
 
 - What are the assumptions of non-parametric tests?
+
 Non-parametric tests assume that the data are at least ordinal and that it does not need to follow a specific distribution, although, depending on the test used, data should be random and independently chosen from the population or homoscedasticity must be met. (2,3)
 
 - What is a p-value?
+
 "The P-value is the probability, calculated assuming that the null hypothesis is true, of obtaining a value of the test statistic at least as contradictory to H0 as the value calculated from the available sample." (1, p.456) In more simple words, it is the probability that the value presented by the test stands even when the null hypothesis is true.
 
 - What is the risk of error when using a statistical test?
+
 When using a statistical test, two types of error can occur: to reject H0 when it is true (type I error, the most used to decide whether to reject null hypothesis), or to not reject H0 when it is false (type II error, often not considered). (1)
 
 - What is the difference between a paired and an unpaired test?
+
 A paired test is used when the samples are matched in some way, whereas an unpaired test is used when the samples are independent of each other. (1)
 
 You can use your favorite LLM, book or web site to answer these questions, but you have to provide at least one reference for each answer (book, article, URL, LLM prompt, etc.).
+
 (1) Devore JL, Berk KN, Carlton MA. Modern Mathematical Statistics with Applications. Cham: Springer International Publishing; 2021. (Springer Texts in Statistics).
+
 (2) Daniel Barch, Tufts University School of Arts and Sciences (Medford, Massachussets), textbook of: Psychology 207 and 208: Advanced Statistics I and II.
+
 (3) https://en.wikipedia.org/w/index.php?title=Nonparametric_statistics&oldid=1309608445 (29.09.2025).
 
 ## Effect of treatment over time
