@@ -339,18 +339,75 @@ Download the file snore.txt
 
 This file contains anthropometric and qualitative measurements (1 person per line).
 
+```{r load-snore-data}
+snore <- read.table("data/test_data/snore.txt", sep = "\t", header=TRUE)
+
+# Factor variables
+snore$sex <- as.factor(snore$sex)
+snore$snore <- as.factor(snore$snore)
+snore$tabac <- as.factor(snore$tabac)
+
+summary(snore)
+```
+
+
 ### The analysis
 Do the data confirm the following stereotypes? Provide a reasoned answer (data, figure, result sentence) for each question.
-- Are snorers fatter?
+
+**- Are snorers fatter?**
+
+The data that is provided does not allow for a precise quantification of fat mass. However, we can use the extensively studied BMI (m/(t^2)) as a proxy for fatness, although it would assume that each individual has the same fat-free mass proportion.\
+```{r BMI-calculation}
+snore$bmi <- snore$weight/(snore$height/100)^2  # Height is in cm
+summary(snore$bmi)
+```
+
+Firstly, let us visualize the BMI distribution for both snorers and non-snorers:
+```{r bmi-distribution}
+library(ggplot2)
+
+ggplot(snore, aes(x = bmi, fill = snore)) +
+  geom_density(alpha = 0.6, adjust = 1.5, na.rm = TRUE) +
+  labs(title = "Density plot of BMI by snoring status",
+       x = "BMI", y = "Count") +
+  theme_minimal()
+```
+
+By visual inspection, we can see that the BMI distributions are quite similar. Let us verify it by a test nonetheless.\
+Let us first check the normality of the distributions:
+```{r normality-test-bmi}
+shapiro.test(snore$bmi[snore$snore == "N"])
+shapiro.test(snore$bmi[snore$snore == "O"])
+```
+The Shapiro-Wilk normality test shows that both distributions significantly deviate from normality (p < 0.001).\
+Thus, we will use a non-parametric test to compare the medians of both groups. Here, the median is relevant because BMI is subjected to high variations as we can see in the summary and density plot.\
+Two tests are possible: the Mann-Whitney U test or the Brunner Munzel test. The latter is more robust as it does not need for equal variances between tested groups (1). Let us check variances equality with the F-test to choose one:
+```{r variance-test-bmi}
+var.test(bmi ~ snore, data = snore)
+```
+
+Variances cannot be considered different (p=0.92), so we can use the Mann-Whitney U test:
+```{r mann-whitney-bmi}
+wilcox.test(bmi ~ snore, data = snore, exact = FALSE)
+```
+
+The Mann-Whitney U test shows no significant difference in BMI between snorers and non-snorers (p=0.95). Thus, based on this sample and the BMI calculation, the stereotype of snorers being fatter cannot hold.\
+
+References:
+
+(1) Karch JD. Psychologists Should Use Brunner-Munzel’s Instead of Mann-Whitney’s U Test as the Default Nonparametric Procedure. Advances in Methods and Practices in Psychological Science. 2021;4(2). doi:10.1177/2515245921999602
+  
+
+**- Do snorers drink or smoke more?**
 
 
-- Do snorers drink or smoke more?
+
+**- Are men fatter?**
 
 
-- Are men fatter?
+
+**- Do women smoke less?**
 
 
-- Do women smoke less?
 
-
-- From a more general perspective: are there any correlations between variables?
+**- From a more general perspective: are there any correlations between variables?**
