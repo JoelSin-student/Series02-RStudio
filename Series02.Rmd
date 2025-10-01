@@ -191,11 +191,13 @@ A paired test is used when the samples are matched in some way, whereas an unpai
 
 You can use your favorite LLM, book or web site to answer these questions, but you have to provide at least one reference for each answer (book, article, URL, LLM prompt, etc.).
 
+References:
+
 (1) Devore JL, Berk KN, Carlton MA. Modern Mathematical Statistics with Applications. Cham: Springer International Publishing; 2021. (Springer Texts in Statistics).
 
 (2) Daniel Barch, Tufts University School of Arts and Sciences (Medford, Massachussets), textbook of: Psychology 207 and 208: Advanced Statistics I and II.
 
-(3) https://en.wikipedia.org/w/index.php?title=Nonparametric_statistics&oldid=1309608445 (29.09.2025).
+(3) List of non-parametric tests: https://en.wikipedia.org/w/index.php?title=Nonparametric_statistics&oldid=1309608445 (29.09.2025).
 
 ## Effect of treatment over time
 This is a very classical question in clinical or sport research: does a treatment-training have an effect over time?
@@ -209,8 +211,8 @@ This file contains before/after measurements. The treatment is a rehabilitation 
 
 Before going further, you have to make clear what are the measured variables. 
 
-```{r load-prepost-data, message=FALSE, warning=FALSE}
-data <- read.csv("data/test_data/PrePost.csv", sep = ",", header=TRUE)
+```{r load-prepost-data}
+data <- read.table("data/test_data/PrePost.csv", sep = ",", header=TRUE)
 summary(data)
 ```
 
@@ -244,7 +246,7 @@ You want to know if the treatment has an effect on one or more of the measured v
 
 - Does the treatment have an effect?
 
-We will decide it over the results of our statistical analysis.
+We will decide it over the results of our statistical analysis. What is useful in this case is the fact that not knowing what the data is about does not have an influence on the statistical analysis.
 
 - What comparison are you going to make?
 
@@ -252,10 +254,37 @@ We will compare the "perf" variable before and after treatment.
 
 - Which test will you use? Parametric or non-parametric?
 
-We can observe that the sample size is small (n=8), which makes difficult to assess the normality of the distribution. Thus, we will use a non-parametric test. For the precise test to be used, we can see that the samples are paired (before and after treatment for the same subjects), so we will use the Wilcoxon signed-rank test that is designed for paired samples.
+We can observe that the sample size is small (n=8), which makes difficult to assess the normality of the distribution. Indeed, the normality test's result would not be relevant for small samples like this (<12 observations) (1).
 
+Thus, we will use a non-parametric test. For the precise test to be used, we can see that the samples are paired (before and after treatment for the same subjects), so we will use the Wilcoxon signed-rank test that is designed for paired samples.
 
+```{r wilcoxon-test }
+# Create two new variables for before and after treatment for 8 subjects
+data$perf_pre <- data$perf[1:8]
+data$perf_post <- data$perf[9:16]
+data <- data[1:8, ]  # Keep only the first 8 rows for analysis
+data$perf_pre
+data$perf_post
 
+wilcox.test(data$perf_pre, data$perf_post, paired = TRUE, alternative = "two.sided")
+```
+
+The Wilcoxon signed-rank test shows a p-value of 0.01356, which is less than the significance level of 0.05. Therefore, we reject the null hypothesis and conclude that there is a significant difference in "perf" before and after treatment.\
+Concerning the direction of change, although obvious from eyes, we can compare the medians of both conditions:
+
+```{r direction of change}
+median_pre <- median(data$perf_pre)
+median_post <- median(data$perf_post)
+cat("Median before treatment:", median_pre, "\n")
+cat("Median after treatment:", median_post, "\n")
+if (median_post > median_pre) {
+  cat("The treatment has led to an increase in 'perf'.\n")
+} else if (median_post < median_pre) {
+  cat("The treatment has led to a decrease in 'perf'.\n")
+} else {
+  cat("There is no change in 'perf' after treatment.\n")
+}   
+```
 
 
 - Which graph illustrates the effect of the treatment?
@@ -264,6 +293,10 @@ We can observe that the sample size is small (n=8), which makes difficult to ass
 - What sentence will you write in your thesis to explain your result?
 
 
+
+References:
+
+(1) Ghasemi A, Zahedias S. Normality tests for statistical analysis: a guide for non-statisticians. Int J Endocrinol Metab. 2012 Spring;10(2):486-9. doi: 10.5812/ijem.3505. Epub 2012 Apr 20. PMID: 23843808; PMCID: PMC3693611.
 
 ## Testing some stereotypes
 Humans have stereotypes, some of them are probably true, some others are probably false (e.g., ref ).
