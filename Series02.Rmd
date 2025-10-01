@@ -292,6 +292,7 @@ if (median_post > median_pre) {
 
 To graph the evolution of the group over time, we can use a slopegraph, which is particularly useful for visualizing changes in paired data. Indeed, it makes it easy to see the direction and magnitude of change for each individual.
 
+
 ```{r slopegraph}
 library(ggplot2)
 
@@ -310,17 +311,19 @@ p <- ggplot(data, aes(x = time, y = perf, group = ID)) +
 
 p +
 stat_summary(aes(group = 1), fun = median, geom = "line",
-linewidth = 1.2, colour = "#D55E00") +
+  linewidth = 1.2, colour = "#D55E00") +
 stat_summary(aes(group = 1), fun = median, geom = "point",
-size = 3, shape = 21, fill = "white", colour = "#D55E00")
+  size = 3, shape = 21, fill = "white", colour = "#D55E00")
 
 ```
+
+We used the median to characterize central tendency, as we used a non-parametric test, but the mean would have been more relevant to visualize the group evolution. Indeed, if the two individuals at the center of the set had not increased their performance, the median would not have changed, whereas the mean would have increased.
 
 *To add medians (thanks to stat_summary()), I used the OpenAI/GPT 5 Mini LLM with the following prompt: "J'utilise RStudio pour créer un slopegraph de type "avant-après". Seulement, je n'arrive pas à intégrer dans le graphe les médianes pour "avant" et "après". Comment pourrais-je faire ?".*
 
 - What sentence will you write in your thesis to explain your result?
 
-
+The Wilcoxon signed-rank test revealed a significant difference in "perf" before and after treatment (p = 0.01356). When we look at each individual, we can see that all subjects improved their performance after treatment. If the protocol was well controlled, which we do not know in this case given the scarce information, we could conclude that the treatment had a positive effect on "perf".
 
 References:
 
