@@ -215,7 +215,11 @@ Before going further, you have to make clear what are the measured variables.
 data <- read.table("data/test_data/PrePost.csv", sep = ",", header=TRUE)
 summary(data)
 ```
-
+Here, we can see that the values in the column "time" are not considered as factors, so we convert them:
+```{r convert-time-to-factor}
+data$time <- as.factor(data$time)
+summary(data)
+```
 
 - What do they measure? 
 
@@ -256,25 +260,22 @@ We will compare the "perf" variable before and after treatment.
 
 We can observe that the sample size is small (n=8), which makes difficult to assess the normality of the distribution. Indeed, the normality test's result would not be relevant for small samples like this (<12 observations) (1).
 
-Thus, we will use a non-parametric test. For the precise test to be used, we can see that the samples are paired (before and after treatment for the same subjects), so we will use the Wilcoxon signed-rank test that is designed for paired samples.
+Thus, we will use a non-parametric test. For the precise test to be used, we can see that the samples are paired (before and after treatment for the same subjects), so we will use the Wilcoxon signed-rank test that is designed for paired samples. We will then compare medians.
 
 ```{r wilcoxon-test }
-# Create two new variables for before and after treatment for 8 subjects
-data$perf_pre <- data$perf[1:8]
-data$perf_post <- data$perf[9:16]
-data <- data[1:8, ]  # Keep only the first 8 rows for analysis
-data$perf_pre
-data$perf_post
-
-wilcox.test(data$perf_pre, data$perf_post, paired = TRUE, alternative = "two.sided")
+# Create vectors for before and after treatment
+perf_pre <- data$perf[data$time == "Before"]
+perf_post <- data$perf[data$time == "After"]
+# Perform the Wilcoxon signed-rank test
+wilcox.test(perf_pre, perf_post, paired = TRUE, alternative = "two.sided")
 ```
 
 The Wilcoxon signed-rank test shows a p-value of 0.01356, which is less than the significance level of 0.05. Therefore, we reject the null hypothesis and conclude that there is a significant difference in "perf" before and after treatment.\
 Concerning the direction of change, although obvious from eyes, we can compare the medians of both conditions:
 
 ```{r direction of change}
-median_pre <- median(data$perf_pre)
-median_post <- median(data$perf_post)
+median_pre <- median(perf_pre)
+median_post <- median(perf_post)
 cat("Median before treatment:", median_pre, "\n")
 cat("Median after treatment:", median_post, "\n")
 if (median_post > median_pre) {
@@ -289,6 +290,33 @@ if (median_post > median_pre) {
 
 - Which graph illustrates the effect of the treatment?
 
+To graph the evolution of the group over time, we can use a slopegraph, which is particularly useful for visualizing changes in paired data. Indeed, it makes it easy to see the direction and magnitude of change for each individual.
+
+```{r slopegraph}
+library(ggplot2)
+
+# Create an ID for each subject
+ID <- rep(1:(nrow(data)/2)) 
+data <- cbind(data, ID)
+
+
+p <- ggplot(data, aes(x = time, y = perf, group = ID)) +
+  geom_point() +
+  geom_line() +
+  scale_x_discrete(limits = c("Before", "After")) +
+  labs(title = "Performance Before and After Treatment",
+       x = "Time", y = "Performance") +
+  theme_minimal()
+
+p +
+stat_summary(aes(group = 1), fun = median, geom = "line",
+linewidth = 1.2, colour = "#D55E00") +
+stat_summary(aes(group = 1), fun = median, geom = "point",
+size = 3, shape = 21, fill = "white", colour = "#D55E00")
+
+```
+
+*To add medians (thanks to stat_summary()), I used the OpenAI/GPT 5 Mini LLM with the following prompt: "J'utilise RStudio pour créer un slopegraph de type "avant-après". Seulement, je n'arrive pas à intégrer dans le graphe les médianes pour "avant" et "après". Comment pourrais-je faire ?".*
 
 - What sentence will you write in your thesis to explain your result?
 
