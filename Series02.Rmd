@@ -21,25 +21,114 @@ As you will see, the data is far from perfect, but this is the reality of experi
 
 Download the file NonUse.csv from the course Moodle.
 
+```{r load-data, message=FALSE, warning=FALSE}
+nonuse <- read.csv("data/test_data/NonUse.csv", sep = ",", header=TRUE)
+head(nonuse)
+summary(nonuse)
+```
+
+
 This file contains measures of upper extremity nonuse:
 
 - PANU: Proximal Arm Non Use
 - SANU: Shoulder Antepulsion Non Use
 - EENU: Elbow Extension Non Use
 
-In your notebook, make a clear description of the experiment, the variables and the data. Do not forget to give the units of each variable, and the range of possible values.
+In your notebook, make a clear description of the experiment, the variables and the data. Do not forget to give the units of each variable, and the range of possible values.\
 
-## Corelation analysis
+  | name | description | unit | range |
+  |------|-------------|------|-------|
+  | PANU | Proximal Arm Non Use | % | 0-100 |
+  | SANU | Shoulder Antepulsion Non Use | % | 0-100 |
+  | EENU | Elbow Extension Non Use | % | 0-100 |
+
+
+## Correlation analysis
 Below are some questions to guide your analysis.
 
 - Is PANU correlated with SANU and/or EENU?
 
+We use a Spearman correlation, because we do not have assumptions about data distribution, and we do not assume a linear relationship between the variables.
+```{r correlation-tests}
+cor.test(nonuse$PANU, nonuse$SANU, method = "spearman")
+cor.test(nonuse$PANU, nonuse$EENU, method = "spearman")
+```
+
+
 - Visualize the PANU-SANU relationship (and the PANU-EENU relationship)
+
+```{r plot-correlations}
+library(ggplot2)
+p1 <- ggplot(nonuse, aes(x = PANU, y = SANU)) +
+  geom_point() +
+  xlim(-100, 100) +
+  ylim(-100, 100) +
+  labs(title = "PANU vs SANU", subtitle = "Whole possible range of data", x = "PANU (%)", y = "SANU (%)") +
+  theme_minimal()
+
+p2 <- ggplot(nonuse, aes(x = PANU, y = EENU)) +
+  geom_point() +
+  xlim(-100, 100) +
+  ylim(-100, 100) +
+  labs(title = "PANU vs EENU", subtitle = "Whole possible range of data", x = "PANU (%)", y = "EENU (%)") +
+  theme_minimal()
+
+show(p1)
+show(p2)
+```
+
 
 - Perform a linear regression for PANU-SANU (and for PANU-EENU)
 
+We do not predict a linear regression, but let us see it nonetheless.
+
+```{r panu-sanu_linear-regression}
+library(ggplot2)
+p1 <- ggplot(nonuse, aes(x = PANU, y = SANU)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  # xlim(-100, 100) +
+  # ylim(-100, 100) +
+  labs(title = "PANU vs SANU", x = "PANU (%)", y = "SANU (%)") +
+  theme_minimal()
+
+show(p1)
+```
+```{r panu-eenu_linear-regression}
+library(ggplot2)
+p1 <- ggplot(nonuse, aes(x = PANU, y = EENU)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  # xlim(-100, 100) +
+  # ylim(-100, 100) +
+  labs(title = "PANU vs EENU", x = "PANU (%)", y = "EENU (%)") +
+  theme_minimal()
+
+show(p1)
+```
+
+
 - Give the regression equations: PANU = a * SANU + b and PANU = a * EENU + b
+
+```{r regression-equations}
+model_sanu <- lm(PANU ~ SANU, data = nonuse)
+summary(model_sanu)
+coefficients_sanu <- coefficients(model_sanu)
+a_sanu <- coefficients_sanu["SANU"]
+b_sanu <- coefficients_sanu["(Intercept)"]
+cat("Regression equation for PANU as a function of SANU: PANU =", a_sanu, "* SANU +", b_sanu, "\n")
+model_eenu <- lm(PANU ~ EENU, data = nonuse)
+summary(model_eenu)
+coefficients_eenu <- coefficients(model_eenu)
+a_eenu <- coefficients_eenu["EENU"]
+b_eenu <- coefficients_eenu["(Intercept)"]
+cat("Regression equation for PANU as a function of EENU: PANU =", a_eenu, "* EENU +", b_eenu, "\n")
+```
 
 - Summarize your results as you would do in your master’s thesis report, or as in a scientific article (e.g., What sentence will you write in the article explaining your result?).
 
+PANU is significantly correlated with SANU and EENU according to the Spearman test (p < 0.01), meaning that higher values of SANU and EENU are associated with higher values of PANU. However, when we tested the linear correlation, we found no significant relationship between PANU and SANU (p = 0.17), but a significant (p < 0.001), although poor (adjusted r² = 0.22), linear correlation between PANU and EENU. This suggests that while there is a monotonic relationship between these variables, the EENU seems more reliable to describe PANU.
+
 - What are the limits of your analysis?
+
+This analysis does not propose a combined model of SANU and EENU to describe PANU, which could be more informative. Additionally, the data may contain non-linear relationships that are not captured by the linear regression model, although the data distribution does not suggest it. Furthermore, we did not test for normality or even check visually the variables distribution, which could have given insights about the statistical power of the sample, or the statistical tests to use.
