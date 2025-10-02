@@ -395,7 +395,7 @@ The Mann-Whitney U test shows no significant difference in BMI between snorers a
 
 References:
 
-(1) Karch JD. Psychologists Should Use Brunner-Munzel’s Instead of Mann-Whitney’s U Test as the Default Nonparametric Procedure. Advances in Methods and Practices in Psychological Science. 2021;4(2). doi:10.1177/2515245921999602
+(1) Karch JD. Psychologists Should Use Brunner-Munzel’s Instead of Mann-Whitney’s U Test as the Default Nonparametric Procedure. Advances in Methods and Practices in Psychological Science. 2021;4(2). doi:10.1177/2515245921999602.
   
 
 **- Do snorers drink or smoke more?**
@@ -494,10 +494,37 @@ wilcox.test(bmi ~ sex, data = snore, exact = FALSE)
 ```
 
 The Mann-Whitney U test shows no significant difference in BMI between men and women (p=0.49). Thus, based on this sample and the BMI calculation, the stereotype of one sex being fatter than the other would not be true.\
-This does not align with physiology, as we know that women have a higher fat mass proportion than men, but the BMI does not allow to assess it precisely.
+This does not align with physiology, as we know that women have a higher fat mass proportion than men (1), but the BMI does not allow to assess it precisely. However, epidemiological studies show that men have a higher prevalence of overweight and obesity than women (1). These phenomena could explain our balanced result.
+
+References:
+
+(1) Muscogiuri G, Verde L, Vetrani C, Barrea L, Savastano S, Colao A. Obesity: a gender-view. J Endocrinol Invest. 2024 Feb;47(2):299-306. doi: 10.1007/s40618-023-02196-z.
 
 **- Do women smoke less?**
 
+We can visualize the smoking status distribution for both sexes:
+```{r smoking-sex-distribution}
+library(ggplot2)
+ggplot(snore, aes(x = tabac, fill = sex)) +
+  geom_bar(position = "dodge", na.rm = TRUE) +
+  labs(title = "Smoking status by sex",
+       x = "Smoking status", y = "Count") +
+  theme_minimal()
+```
 
+Graphically, it seems like men smoke more than women. Let us verify it.\
+We check the expected frequencies in the contingency table:
+```{r expected-frequencies-smoking-sex}
+table_sex_tabac <- table(snore$sex, snore$tabac)
+table_sex_tabac
+chisq.test(table_sex_tabac)$expected
+```
+All expected frequencies are above 5, so we can use the Chi-squared test:
+```{r chi-squared-smoking-sex}
+chisq.test(table_sex_tabac)
+```
+
+The Chi-squared test shows a significant association between sex and smoking status (p=0.008). Thus, based on this sample, the stereotype of men smoking more than women seems true.\
+However, even than for the drinking stereotype, groups are unbalanced (25 women vs 75 men), which makes them difficult to be objectively compared.
 
 **- From a more general perspective: are there any correlations between variables?**
