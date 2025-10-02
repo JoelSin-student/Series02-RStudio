@@ -325,7 +325,7 @@ We used the median to characterize central tendency, as we used a non-parametric
 
 The Wilcoxon signed-rank test revealed a significant difference in "perf" before and after treatment (p = 0.01356). When we look at each individual, we can see that all subjects improved their performance after treatment. If the protocol was well controlled, which we do not know in this case given the scarce information, we could conclude that the treatment had a positive effect on "perf".
 
-References:
+Reference:
 
 (1) Ghasemi A, Zahedias S. Normality tests for statistical analysis: a guide for non-statisticians. Int J Endocrinol Metab. 2012 Spring;10(2):486-9. doi: 10.5812/ijem.3505. Epub 2012 Apr 20. PMID: 23843808; PMCID: PMC3693611.
 
@@ -339,18 +339,218 @@ Download the file snore.txt
 
 This file contains anthropometric and qualitative measurements (1 person per line).
 
+```{r load-snore-data}
+snore <- read.table("data/test_data/snore.txt", sep = "\t", header=TRUE)
+
+# Factor variables
+snore$sex <- as.factor(snore$sex)
+snore$snore <- as.factor(snore$snore)
+snore$tabac <- as.factor(snore$tabac)
+
+summary(snore)
+```
+
+
 ### The analysis
 Do the data confirm the following stereotypes? Provide a reasoned answer (data, figure, result sentence) for each question.
-- Are snorers fatter?
 
+**- Are snorers fatter?**
 
-- Do snorers drink or smoke more?
+The data that is provided does not allow for a precise quantification of fat mass. However, we can use the extensively studied BMI (m/(t^2)) as a proxy for fatness, although it would assume that each individual has the same fat-free mass proportion.\
+```{r BMI-calculation}
+snore$bmi <- snore$weight/(snore$height/100)^2  # Height is in cm
+summary(snore$bmi)
+```
 
+Firstly, let us visualize the BMI distribution for both snorers and non-snorers:
+```{r bmi-distribution}
+library(ggplot2)
 
-- Are men fatter?
+ggplot(snore, aes(x = bmi, fill = snore)) +
+  geom_density(alpha = 0.6, adjust = 1.5) +
+  labs(title = "Density plot of BMI by snoring status",
+       x = "BMI", y = "Count") +
+  theme_minimal()
+```
 
+By visual inspection, we can see that the BMI distributions are quite similar. Let us verify it by a test nonetheless.\
+Let us first check the normality of the distributions:
+```{r normality-test-bmi}
+shapiro.test(snore$bmi[snore$snore == "N"])
+shapiro.test(snore$bmi[snore$snore == "O"])
+```
+The Shapiro-Wilk normality test shows that both distributions significantly deviate from normality (p < 0.001).\
+Thus, we will use a non-parametric test to compare the medians of both groups. Here, the median is relevant because BMI is subjected to high variations as we can see in the summary and density plot.\
+Two tests are possible: the Mann-Whitney U test or the Brunner Munzel test. The latter is more robust as it does not need for equal variances between tested groups (1). Let us check variances equality with the F-test to choose one:
+```{r variance-test-bmi}
+var.test(bmi ~ snore, data = snore)
+```
 
-- Do women smoke less?
+Variances cannot be considered different (p=0.92), so we can use the Mann-Whitney U test:
+```{r mann-whitney-bmi}
+wilcox.test(bmi ~ snore, data = snore, exact = FALSE)
+```
 
+The Mann-Whitney U test shows no significant difference in BMI between snorers and non-snorers (p=0.95). Thus, based on this sample and the BMI calculation, the stereotype of snorers being fatter cannot hold.\
 
-- From a more general perspective: are there any correlations between variables?
+Reference:
+
+(1) Karch JD. Psychologists Should Use Brunner-Munzel’s Instead of Mann-Whitney’s U Test as the Default Nonparametric Procedure. Advances in Methods and Practices in Psychological Science. 2021;4(2). doi:10.1177/2515245921999602.
+  
+
+**- Do snorers drink or smoke more?**
+
+Let us first consider the smoke stereotype.\
+We can visualize the smoking status distribution for both snorers and non-snorers:
+```{r smoking-distribution}
+library(ggplot2)
+
+ggplot(snore, aes(x = tabac, fill = snore)) +
+  geom_bar(position = "dodge", na.rm = TRUE) +
+  labs(title = "Smoking status by snoring status",
+       x = "Smoking status", y = "Count") +
+  theme_minimal()
+```
+
+Visually, it seems like smoking does not affect snoring status: occurrences are quite similar for snorers, whether they are smoking or not.\
+We are comparing two categorical variables (smoking status and snoring status) from independant groups, so we have the choice between the Chi-squared test and the Fisher's exact test. The latter is more accurate for small samples or when expected frequencies in any cell of the contingency table are below 5. So let us check the expected frequencies:
+```{r expected-frequencies-smoking}
+table_snore_tabac <- table(snore$snore, snore$tabac)
+table_snore_tabac
+chisq.test(table_snore_tabac)$expected
+```
+
+All expected frequencies are above 5, so we can use the Chi-squared test:
+```{r chi-squared-smoking}
+chisq.test(table_snore_tabac)
+```
+
+The Chi-squared test shows no significant association between snoring status and smoking status (p=0.41). Thus, based on this sample, the stereotype of snorers smoking more is not true.
+
+Now, let us consider the drinking stereotype.\
+We can visualize the drinking occurrence (we do not know if it is daily, weekly or mensually) distribution for both snorers and non-snorers:
+```{r drinking-distribution}
+library(ggplot2)
+ggplot(snore, aes(x = alcool, fill = snore)) +
+  geom_bar() +
+  labs(title = "Drinking occurrence by snoring status",
+       x = "Drinking occurrence", y = "Count") +
+  theme_minimal()
+ggplot(snore, aes(x = alcool, fill = snore)) +
+  geom_density(alpha = 0.6, adjust = 1.5) +
+  labs(title = "Density plot of drinking occurrence by snoring status",
+       x = "Drinking occurrence", y = "Count") +
+  theme_minimal()
+```
+
+We want to evaluate if snorers drink more. Then, we can consider the "alcool" variable as scalable (as for the BMI stereotype), and we can choose between the Mann-Whitney U and the Brunner Munzel tests to compare the medians of both groups (distributions are obviously not normal).\
+Let us check variances equality with the F-test to choose one:
+```{r variance-test-drinking}
+var.test(alcool ~ snore, data = snore)
+```
+
+Variances cannot be considered different (p=0.55), so we can use the Mann-Whitney U test:
+```{r mann-whitney-drinking}
+wilcox.test(alcool ~ snore, data = snore, exact = FALSE)
+```
+
+The distributions are significantly different (p=0.009). Let us check the direction:
+```{r mann-whitney-drinking-less}
+wilcox.test(alcool ~ snore, data = snore, exact = FALSE, 
+            alternative = "less")
+```
+
+The Mann-Whitney U test shows that snorers drink significantly less than non-snorers (p=0.004). Thus, based on this sample, the stereotype of snorers drinking more is false, and, in fact, the opposite seems to be true.\
+However, groups are quite unbalanced (35 non-snorers vs 65 snorers), which is not ideal to assume the independence of groups. 
+
+**- Are men fatter?**
+
+We can visualize the BMI distribution in function of sex:
+```{r bmi-sex-distribution}
+library(ggplot2)
+ggplot(snore, aes(x = bmi, fill = sex)) +
+  geom_density(alpha = 0.6, adjust = 1.5) +
+  labs(title = "Density plot of BMI by sex",
+       x = "BMI", y = "Count") +
+  theme_minimal()
+```
+
+By visual inspection, we can see that the BMI distributions are quite similar. Let us verify it by a test nonetheless.\
+Let us first check the normality of the distributions:
+```{r normality-test-bmi-sex}
+shapiro.test(snore$bmi[snore$sex == "F"])
+shapiro.test(snore$bmi[snore$sex == "H"])
+```
+
+The Shapiro-Wilk normality test shows that both distributions significantly deviate from normality (p < 0.001).\
+Thus, we will use a non-parametric test to compare the medians of both groups. Let us check variances equality with the F-test:
+```{r variance-test-bmi-sex}
+var.test(bmi ~ sex, data = snore)
+```
+
+Variances cannot be considered different (p=0.83), so we can use the Mann-Whitney U test:
+```{r mann-whitney-bmi-sex}
+wilcox.test(bmi ~ sex, data = snore, exact = FALSE)
+```
+
+The Mann-Whitney U test shows no significant difference in BMI between men and women (p=0.49). Thus, based on this sample and the BMI calculation, the stereotype of one sex being fatter than the other would not be true.\
+This does not align with physiology, as we know that women have a higher fat mass proportion than men (1), but the BMI does not allow to assess it precisely. However, epidemiological studies show that men have a higher prevalence of overweight and obesity than women (1). These phenomena could explain our balanced result.
+
+Reference:
+
+(1) Muscogiuri G, Verde L, Vetrani C, Barrea L, Savastano S, Colao A. Obesity: a gender-view. J Endocrinol Invest. 2024 Feb;47(2):299-306. doi: 10.1007/s40618-023-02196-z.
+
+**- Do women smoke less?**
+
+We can visualize the smoking status distribution for both sexes:
+```{r smoking-sex-distribution}
+library(ggplot2)
+ggplot(snore, aes(x = tabac, fill = sex)) +
+  geom_bar(position = "dodge", na.rm = TRUE) +
+  labs(title = "Smoking status by sex",
+       x = "Smoking status", y = "Count") +
+  theme_minimal()
+```
+
+Graphically, it seems like men smoke more than women. Let us verify it.\
+We check the expected frequencies in the contingency table:
+```{r expected-frequencies-smoking-sex}
+table_sex_tabac <- table(snore$sex, snore$tabac)
+table_sex_tabac
+chisq.test(table_sex_tabac)$expected
+```
+All expected frequencies are above 5, so we can use the Chi-squared test:
+```{r chi-squared-smoking-sex}
+chisq.test(table_sex_tabac)
+```
+
+The Chi-squared test shows a significant association between sex and smoking status (p=0.008). Thus, based on this sample, the stereotype of men smoking more than women seems true.\
+However, even than for the drinking stereotype, groups are unbalanced (25 women vs 75 men), which makes them difficult to be objectively compared.
+
+**- From a more general perspective: are there any correlations between variables?**
+
+We can visualize the correlations between all quantitative variables with a pairs plot:
+```{r pairs-plot}
+pairs(snore[, c("age", "height", "weight", "bmi", "alcool")],
+      main = "Pairs plot of quantitative variables")
+```
+
+Let us perform monotonic correlation tests for each pair of variables:
+```{r correlation-tests-all}
+cor.test(snore$age, snore$height, method = "spearman", exact = FALSE)
+cor.test(snore$age, snore$weight, method = "spearman", exact = FALSE)
+cor.test(snore$age, snore$bmi, method = "spearman", exact = FALSE)
+cor.test(snore$age, snore$alcool, method = "spearman", exact = FALSE)
+cor.test(snore$height, snore$weight, method = "spearman", exact = FALSE)
+cor.test(snore$height, snore$bmi, method = "spearman", exact = FALSE)
+cor.test(snore$height, snore$alcool, method = "spearman", exact = FALSE)
+cor.test(snore$weight, snore$bmi, method = "spearman", exact = FALSE)
+cor.test(snore$weight, snore$alcool, method = "spearman", exact = FALSE)
+cor.test(snore$bmi, snore$alcool, method = "spearman", exact = FALSE)
+```
+
+In conclusion, only weight, height and BMI are correlated (all p<0.01), and in a positive trend (all rho>0), which is not surprising as BMI is calculated from weight and height. Moreover, we know that these two last metrics are heavily correlated (1), which is confirmed here.\
+
+Reference:
+
+(1) Silverman, M.P. (2022) Exact Statistical Distribution and Correlation of Human Height and Weight: Analysis and Experimental Confirmation. Open Journal of Statistics, 12, 743-787. https://doi.org/10.4236/ojs.2022.125044
