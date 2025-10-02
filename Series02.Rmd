@@ -325,7 +325,7 @@ We used the median to characterize central tendency, as we used a non-parametric
 
 The Wilcoxon signed-rank test revealed a significant difference in "perf" before and after treatment (p = 0.01356). When we look at each individual, we can see that all subjects improved their performance after treatment. If the protocol was well controlled, which we do not know in this case given the scarce information, we could conclude that the treatment had a positive effect on "perf".
 
-References:
+Reference:
 
 (1) Ghasemi A, Zahedias S. Normality tests for statistical analysis: a guide for non-statisticians. Int J Endocrinol Metab. 2012 Spring;10(2):486-9. doi: 10.5812/ijem.3505. Epub 2012 Apr 20. PMID: 23843808; PMCID: PMC3693611.
 
@@ -393,7 +393,7 @@ wilcox.test(bmi ~ snore, data = snore, exact = FALSE)
 
 The Mann-Whitney U test shows no significant difference in BMI between snorers and non-snorers (p=0.95). Thus, based on this sample and the BMI calculation, the stereotype of snorers being fatter cannot hold.\
 
-References:
+Reference:
 
 (1) Karch JD. Psychologists Should Use Brunner-Munzel’s Instead of Mann-Whitney’s U Test as the Default Nonparametric Procedure. Advances in Methods and Practices in Psychological Science. 2021;4(2). doi:10.1177/2515245921999602.
   
@@ -496,7 +496,7 @@ wilcox.test(bmi ~ sex, data = snore, exact = FALSE)
 The Mann-Whitney U test shows no significant difference in BMI between men and women (p=0.49). Thus, based on this sample and the BMI calculation, the stereotype of one sex being fatter than the other would not be true.\
 This does not align with physiology, as we know that women have a higher fat mass proportion than men (1), but the BMI does not allow to assess it precisely. However, epidemiological studies show that men have a higher prevalence of overweight and obesity than women (1). These phenomena could explain our balanced result.
 
-References:
+Reference:
 
 (1) Muscogiuri G, Verde L, Vetrani C, Barrea L, Savastano S, Colao A. Obesity: a gender-view. J Endocrinol Invest. 2024 Feb;47(2):299-306. doi: 10.1007/s40618-023-02196-z.
 
@@ -528,3 +528,29 @@ The Chi-squared test shows a significant association between sex and smoking sta
 However, even than for the drinking stereotype, groups are unbalanced (25 women vs 75 men), which makes them difficult to be objectively compared.
 
 **- From a more general perspective: are there any correlations between variables?**
+
+We can visualize the correlations between all quantitative variables with a pairs plot:
+```{r pairs-plot}
+pairs(snore[, c("age", "height", "weight", "bmi", "alcool")],
+      main = "Pairs plot of quantitative variables")
+```
+
+Let us perform monotonic correlation tests for each pair of variables:
+```{r correlation-tests-all}
+cor.test(snore$age, snore$height, method = "spearman", exact = FALSE)
+cor.test(snore$age, snore$weight, method = "spearman", exact = FALSE)
+cor.test(snore$age, snore$bmi, method = "spearman", exact = FALSE)
+cor.test(snore$age, snore$alcool, method = "spearman", exact = FALSE)
+cor.test(snore$height, snore$weight, method = "spearman", exact = FALSE)
+cor.test(snore$height, snore$bmi, method = "spearman", exact = FALSE)
+cor.test(snore$height, snore$alcool, method = "spearman", exact = FALSE)
+cor.test(snore$weight, snore$bmi, method = "spearman", exact = FALSE)
+cor.test(snore$weight, snore$alcool, method = "spearman", exact = FALSE)
+cor.test(snore$bmi, snore$alcool, method = "spearman", exact = FALSE)
+```
+
+In conclusion, only weight, height and BMI are correlated (all p<0.01), and in a positive trend (all rho>0), which is not surprising as BMI is calculated from weight and height. Moreover, we know that these two last metrics are heavily correlated (1), which is confirmed here.\
+
+Reference:
+
+(1) Silverman, M.P. (2022) Exact Statistical Distribution and Correlation of Human Height and Weight: Analysis and Experimental Confirmation. Open Journal of Statistics, 12, 743-787. https://doi.org/10.4236/ojs.2022.125044
