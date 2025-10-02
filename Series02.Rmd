@@ -554,3 +554,15 @@ In conclusion, only weight, height and BMI are correlated (all p<0.01), and in a
 Reference:
 
 (1) Silverman, M.P. (2022) Exact Statistical Distribution and Correlation of Human Height and Weight: Analysis and Experimental Confirmation. Open Journal of Statistics, 12, 743-787. https://doi.org/10.4236/ojs.2022.125044
+
+
+
+# Epilogue: beyond the scope of this series
+Finally, some of you may want to go beyond the scope of this series with new questions, such as:
+
+- Can you predict the value of one variable from the others? (linear regression, logistic regression, etc.)\
+- Can you classify individuals based on their variables? (clustering, PCA, etc.)\
+*NOTE: These questions are more advanced, and I don’t want you to address them from a technical standpoint or provide code. But they give you an idea of what you can do with data mining techniques… provided you know why you want to do it. I invite you to think about the perspective these questions open up and, if you feel ready to do so, to write a short paragraph about it.*
+
+
+  Obviously, the answer to both questions is yes, but the real question is: to which extent and is it relevant to do so? In the last reference we cited, the authors used advanced mathematical tools to model the relationship between height and weight, and they were able to predict the variables defining the relationship and distribution according to sex. However, regressions are often poor for prediction because the variance of a variable is never totally explained by another. Moreover, the more variables you add to a model, the more it fits the data, but the less it generalizes to new data. In the case of sports training, it implies that each variable of the model must be personalized for each athlete, which is increasingly easier with the development of wearable technologies. In this field, many applications are possible, such as training optimization, performance prediction, or talent identification. Nevertheless, the main risk of this digitalization is the disconnection from the real world, which is why no staff could ever function without a coach. To conclude with these disjointed thoughts, I think data mining can provide with very useful insights and guidelines depending on the field of application, but it should be constantly put into perspective of hindsight and terrain observations.
